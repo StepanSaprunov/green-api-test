@@ -1,0 +1,46 @@
+version: '3.0'
+
+services:
+  backend:
+    container_name: green_api_backend
+    build: 
+      context: ./backend
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    ports:
+      - 8000:8000
+    networks:
+      - green_api
+
+  service:
+    container_name: green_api_service
+    build: 
+      context: ./service
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./service/.env
+    volumes:
+      - ./service:/app
+    networks:
+      - green_api
+
+  rabbit:
+    container_name: green_api_rabbit
+    image: rabbitmq:3.12.2-management
+    env_file:
+      - ./rabbit/.env
+    ports:
+      - 15672:15672
+      - 5672:5672
+    hostname: rabbit
+    volumes:
+      - ./rabbit/data:/var/lib/rabbitmq
+
+
+
+networks:
+  green_api:
+    driver: bridge
